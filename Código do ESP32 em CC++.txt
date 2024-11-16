@@ -1,0 +1,59 @@
+#include <DHT.h>
+
+#define SENSOR_P 12  // Botão para o sensor P
+#define SENSOR_K 13  // Botão para o sensor K
+#define LDR_PIN 34   // LDR (Sensor de pH)
+#define DHT_PIN 15   // Sensor DHT22
+#define RELAY_PIN 23 // Relé para controle de irrigação
+
+#define DHTTYPE DHT22
+DHT dht(DHT_PIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(115200);
+  
+  // Configuração dos pinos
+  pinMode(SENSOR_P, INPUT_PULLUP);
+  pinMode(SENSOR_K, INPUT_PULLUP);
+  pinMode(RELAY_PIN, OUTPUT);
+  digitalWrite(RELAY_PIN, LOW); // Relé desligado inicialmente
+  
+  dht.begin(); // Inicia o DHT22
+  
+  Serial.println("Sistema de Irrigação Iniciado");
+}
+
+void loop() {
+  // Leitura dos botões
+  bool nutrientP = !digitalRead(SENSOR_P); // Botão pressionado = true
+  bool nutrientK = !digitalRead(SENSOR_K); // Botão pressionado = true
+  
+  // Leitura do LDR (mapeando para escala de pH)
+  int ldrValue = analogRead(LDR_PIN);
+  float pH = map(ldrValue, 0, 4095, 0, 14);
+  
+  // Leitura da umidade do solo
+  float humidity = dht.readHumidity();
+  
+  // Exibir dados no monitor serial
+  Serial.print("Nutriente P: ");
+  Serial.println(nutrientP ? "Adequado" : "Inadequado");
+  Serial.print("Nutriente K: ");
+  Serial.println(nutrientK ? "Adequado" : "Inadequado");
+  Serial.print("pH: ");
+  Serial.println(pH);
+  Serial.print("Umidade: ");
+  Serial.print(humidity);
+  Serial.println("%");
+  
+  // Lógica para controle da irrigação
+  if (nutrientP || nutrientK && pH >= 6.5 && pH <= 7.5 && humidity < 40.0) {
+    digitalWrite(RELAY_PIN, HIGH); // Liga a irrigação
+    Serial.println("Irrigação: LIGADA");
+  } else {
+    digitalWrite(RELAY_PIN, LOW); // Desliga a irrigação
+    Serial.println("Irrigação: DESLIGADA");
+  }
+  
+  delay(2000); // Atualização a cada 2 segundos
+}
