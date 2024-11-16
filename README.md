@@ -1,6 +1,6 @@
 ![logo FIAP](https://github.com/Vitor-coder-eng/Cap-1---Construindo-uma-maquina-agricola/blob/main/logo-fiap.png)
 
-# Cap-1---Construindo-uma-maquina-agricola
+# Fase 3: Cap 1 - Construindo uma máquina agrícola
 
 ## Projeto de Irrigação Inteligente
 
